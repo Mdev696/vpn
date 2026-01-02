@@ -32,3 +32,7 @@ app.listen(3000, () => {
     console.log('--- SERVIDOR DO PORTAL VPN RODANDO ---');
     console.log('Acesse o seu arquivo HTML no navegador.');
 });
+
+app.get('/', (req, res) => {
+    res.send("O servidor da VPN está ativo e aguardando comandos do portal!");
+});
