@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal VPN Google</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .card {
+            background: white;
+            padding: 2.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 320px;
+        }
+
+        h2 {
+            color: #3c4043;
+            margin-bottom: 1rem;
+        }
+
+        .status {
+            margin: 20px 0;
+            font-size: 1.1rem;
+            font-weight: 600;
+            padding: 10px;
+            border-radius: 8px;
+            background: #ffebee;
+            color: #d93025;
+            transition: 0.3s;
+        }
+
+        .status.online {
+            background: #e6f4ea;
+            color: #188038;
+        }
+
+        button {
+            background: #1a73e8;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 24px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            background: #1765cc;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+
+        .loader {
+            display: none;
+            margin-top: 10px;
+            font-size: 0.8rem;
+            color: #666;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="card">
+        <h2>Google VPN</h2>
+        <div id="status" class="status">Desconectado</div>
+        <button id="vpnBtn" onclick="toggleVPN()">Conectar Agora</button>
+        <div id="loader" class="loader">Processando solicitação...</div>
+    </div>
+
+    <script>
+        let isConnected = false;
+        const statusDiv = document.getElementById('status');
+        const btn = document.getElementById('vpnBtn');
+        const loader = document.getElementById('loader');
+
+        async function toggleVPN() {
+            const action = isConnected ? 'disconnect' : 'connect';
+
+            // UI Update
+            btn.disabled = true;
+            loader.style.display = 'block';
+
+            try {
+                const response = await fetch('http://localhost:3000/vpn', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: action })
+                });
+
+                if (response.ok) {
+                    isConnected = !isConnected;
+                    statusDiv.innerText = isConnected ? "Conectado" : "Desconectado";
+                    statusDiv.className = isConnected ? "status online" : "status";
+                    btn.innerText = isConnected ? "Desconectar" : "Conectar Agora";
+                } else {
+                    alert("Erro na conexão. Verifique o terminal do Node.js");
+                }
+            } catch (error) {
+                alert("O servidor backend não está respondendo. Rode 'node server.js'");
+            } finally {
+                btn.disabled = false;
+                loader.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+
+</html>
